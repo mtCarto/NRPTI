@@ -1,12 +1,12 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Subject, of } from 'rxjs';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, FormControl } from '@angular/forms';
 import { Location } from '@angular/common';
-import { Picklists, StateStatus, StateIDs } from 'projects/common/src/app/utils/record-constants';
+import { Picklists, StateStatus, StateIDs } from '../../../../../common/src/app/utils/record-constants';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RecordUtils } from '../../records/utils/record-utils';
 import { FactoryService } from '../../services/factory.service';
-import { LoadingScreenService, Utils, StoreService } from 'projects/global/src/public-api';
+import { LoadingScreenService, Utils, StoreService } from 'nrpti-angular-components';
 import { DialogService } from 'ng2-bootstrap-modal';
 import moment from 'moment';
 import { ConfirmComponent } from '../../confirm/confirm.component';
@@ -55,6 +55,26 @@ export class MinesRecordsAddEditComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.loadingScreenService.setLoadingState(true, 'main');
+
+    this.setOrRemoveRecordAddEditState();
+    this.route.data.pipe(takeUntil(this.ngUnsubscribe)).subscribe((res: any) => {
+      this.isEditing = res.breadcrumb !== 'Add Record';
+      if (this.isEditing) {
+        if (res && res.record && res.record[0] && res.record[0].data) {
+          this.record = res.record[0].data;
+          this.populateTextFields();
+        } else {
+          alert('Error: could not load record.');
+          this.router.navigate(['mines']);
+        }
+      }
+      this.buildForm();
+
+      this.loading = false;
+      this.loadingScreenService.setLoadingState(false, 'main');
+      this._changeDetectionRef.detectChanges();
+    })
   }
 
   /**
@@ -89,6 +109,54 @@ export class MinesRecordsAddEditComponent implements OnInit {
       this.lastEditedSubText = `Added on ${moment(this.record.dateAdded).format('MMMM DD, YYYY')}`;
     }
   }
+
+  /**
+   * Build the add-edit form.
+   *
+   * If editing, pre-populate any existing values. If StoreService contains an item named 'recordAddEdit', use any
+   * values set in that piece of state to pre-populate the form fields, and then clear that item from the store.
+   *
+   * @private
+   * @memberof MinesRecordsAddEditComponent
+   */
+  private buildForm() {
+    this.myForm = new FormGroup({
+      recordName: new FormControl(
+        (this.recordState && this.recordState.recordName) || (this.record && this.record.name) || ''
+      ),
+      recordDate: new FormControl(
+        (this.recordState &&
+          this.recordState.recordDate &&
+          this.utils.convertFormGroupNGBDateToJSDate(new Date(this.recordState.recordDate.date))) ||
+          (this.record && this.record.date && this.utils.convertJSDateToNGBDate(new Date(this.record.date))) ||
+          '' || null
+      ),
+      recordType: new FormControl(
+        (this.recordState && this.recordState.recordType) || (this.record && this.record.type) || ''
+      ),
+      recordAgency: new FormControl(
+        (this.recordState && this.recordState.recordAgency) ||
+          (this.record && this.record.agency) || ''
+      ),
+      recordPublish: new FormControl(
+        (this.recordState && this.recordState.recordPublish) ||
+          (this.record && this.record.read.includes('public')) || false
+      )
+    });
+
+    if (this.recordState) {
+      // State was saved from before, so mark everything dirty so as not to miss any previous user edits
+      this.myForm.get('recordName').markAsDirty();
+      this.myForm.get('recordDate').markAsDirty();
+      this.myForm.get('recordType').markAsDirty();
+      this.myForm.get('recordAgency').markAsDirty();
+      this.myForm.get('recordPublish').markAsDirty();
+    }
+
+    // Remove used state
+    this.storeService.removeItem(StateIDs.recordAddEdit);
+  }
+
 
   /**
    * Toggle the publish formcontrol.
