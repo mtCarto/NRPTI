@@ -90,6 +90,7 @@ export class SchemaLists {
  */
 export class StateIDs {
   public static readonly collectionAddEdit = 'collectionAddEdit';
+  public static readonly recordAddEdit = 'recordAddEdit';
 }
 
 /**
@@ -215,6 +216,19 @@ export class Picklists {
     'Management Plan',
     'Order',
     'Permit Amendment',
+    'Permit',
+    'Report'
+  ];
+
+  public static readonly mineRecordTypePickList = [
+    'Administrative Penalty',
+    'Administrative Sanction',
+    'Certificate',
+    'Certificate Amendment',
+    'Compliance Self-report',
+    'Construction Plan',
+    'Inspection',
+    'Order',
     'Permit',
     'Report'
   ];
