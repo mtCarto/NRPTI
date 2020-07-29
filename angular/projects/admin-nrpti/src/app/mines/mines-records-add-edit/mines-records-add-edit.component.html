@@ -117,24 +117,11 @@
     <!-- <section class="my-3 py-3 border-bottom"> -->
     <!-- TODO Manage records -->
     <!-- </section> -->
-
-    <section>
-      <div class="text-right mb-3">
-        <button
-          class="btn btn-primary"
-          (click)="onAddRecordsTorecord()"
-          title="Select records to add to the record"
-        >
-          <i class="material-icons mr-1 align-middle">add</i>
-          <span class="align-middle">Select Records To Add</span>
-        </button>
-      </div>
-    </section>
   </form>
 
   <div class="d-flex justify-content-between mt-4 mb-3">
     <div *ngIf="isEditing" class="col-6 mr-2 col-md-5 mr-md-0 col-lg-4 col-xl-3">
-      <button type="button" class="btn btn-outline-dark mb-1" (click)="deleterecord()" title="Delete">
+      <button type="button" class="btn btn-outline-dark mb-1" (click)="deleteRecord()" title="Delete">
         <i class="material-icons mr-1">
           delete_forever
         </i>

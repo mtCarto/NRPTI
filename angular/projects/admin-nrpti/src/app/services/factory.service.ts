@@ -350,6 +350,43 @@ export class FactoryService {
     return this.recordService.deleteRecord(collectionId, 'collection');
   }
 
+  /**
+   * Edit a mine record.
+   *
+   * @param {*} record object containing mine record values to update into a record item.
+   * @returns {Observable<object>}
+   * @memberof FactoryService
+   */
+  public editMineRecord(record: any): Observable<object> {
+    const outboundObject = {
+      records: [record]
+    };
+    return this.recordService.editRecord(outboundObject).pipe(catchError(error => this.apiService.handleError(error)));
+  }
+
+  // todo determine payload type to set
+  public createMineRecord(record: any) {
+    const outboundObject = {
+      records: [record]
+    };
+    return this.recordService
+      .createRecord(outboundObject)
+      .pipe(catchError(error => this.apiService.handleError(error)));
+  }
+
+  /**
+   * Delete a mine record.
+   *
+   * @param {string} recordId _id of the record to delete.
+   * @param {string} model schema of record to delete
+   * @returns {Promise<any>}
+   * @memberof FactoryService
+   */
+  // todo verify need model specified
+  public deleteMineRecord(recordId: string, model: string): Promise<any> {
+    return this.recordService.deleteRecord(recordId, model);
+  }
+
   // News
   public createNews(news: any): Observable<object> {
     const outboundObject = {
