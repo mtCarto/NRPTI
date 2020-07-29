@@ -70,7 +70,7 @@
     <section class="my-3 py-3 border-bottom">
       <div class="flex-container">
         <div class="label-pair">
-          <label for="recordName">record Name</label>
+          <label for="recordName">Record Name</label>
           <input
             name="recordName"
             id="recordName"
@@ -96,7 +96,7 @@
           </div>
         </div>
         <div class="label-pair">
-          <label for="recordType">record Type</label>
+          <label for="recordType">Record Type</label>
           <select name="recordType" id="recordType" formControlName="recordType" class="form-control">
             <option *ngFor="let recordType of recordTypes" [ngValue]="recordType">
               {{ recordType }}
@@ -114,9 +114,15 @@
       </div>
     </section>
 
-    <!-- <section class="my-3 py-3 border-bottom"> -->
-    <!-- TODO Manage records -->
-    <!-- </section> -->
+    <section>
+      <h4>Documents</h4>
+      <app-document-edit
+        [documents]="record ? record.documents : []"
+        (documentsToDelete)="documentsToDelete = $event"></app-document-edit>
+      <app-document-link-staging
+        (linksChanged)="links = $event"
+        (documentsChanged)="documents = $event"></app-document-link-staging>
+    </section>
   </form>
 
   <div class="d-flex justify-content-between mt-4 mb-3">
