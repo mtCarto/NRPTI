@@ -34,11 +34,16 @@ export class MinesRecordsAddEditComponent implements OnInit {
   public record = null;
   public lastEditedSubText = null;
 
+  // Documents
+  public documents = [];
+  public links = [];
+  public documentsToDelete = [];
+
   // Pick lists
   public recordTypes = Picklists.mineRecordTypePickList;
   public recordAgencies = Picklists.collectionAgencyPicklist;
 
-  // collection add edit state
+  // record add edit state
   public recordState = null;
 
   constructor(
@@ -224,34 +229,56 @@ export class MinesRecordsAddEditComponent implements OnInit {
     this.myForm.get('recordDate').dirty &&
       (record['date'] = this.utils.convertFormGroupNGBDateToJSDate(this.myForm.get('recordDate').value));
     this.myForm.get('recordType').dirty && (record['type'] = this.myForm.get('recordType').value);
+    // todo agency not showing on detail screen
     this.myForm.get('recordAgency').dirty && (record['agency'] = this.myForm.get('recordAgency').value);
 
     if (this.myForm.get('recordPublish').dirty && this.myForm.get('recordPublish').value) {
       record['addRole'] = 'public';
     }
 
+    // todo add logic for BCMI flavour
     if (this.isEditing) {
       record['_id'] = this.record._id;
 
       this.factoryService.editMineRecord(record).subscribe(async res => {
         this.recordUtils.parseResForErrors(res);
 
+        const docResponse = await this.recordUtils.handleDocumentChanges(
+          this.links,
+          this.documents,
+          this.documentsToDelete,
+          this.record._id,
+          this.factoryService
+        );
+
+        console.log(docResponse);
+
         this.loadingScreenService.setLoadingState(false, 'main');
         this.router.navigate(['mines', this.record._master, 'records', this.record._id, 'detail']);
-      })
+      });
     } else {
-      // todo keep as mineId?
+      record['mineGuid'] = this.route.snapshot.paramMap.get('mineId');
       record['_master'] = this.route.snapshot.paramMap.get('mineId');
       record['project'] = this.route.snapshot.paramMap.get('mineId');
 
       this.factoryService.createMineRecord(record).subscribe(async (res: any) => {
         this.recordUtils.parseResForErrors(res);
 
-        const createedRecord = res && res.length && res[0] && res[0].length && res[0][0] && res[0][0].object;
+        // todo check 400 error, likely local docker minio config
+        const docResponse = await this.recordUtils.handleDocumentChanges(
+          this.links,
+          this.documents,
+          this.documentsToDelete,
+          res[0][0].object[0]._id,
+          this.factoryService
+        );
+        console.log(docResponse);
 
+        const createdRecord = res && res.length && res[0] && res[0].length && res[0][0] && res[0][0].object;
+        // console.log('createdRec: ', createdRecord)
         this.loadingScreenService.setLoadingState(false, 'main');
-        if (createedRecord) {
-          this.router.navigate(['mines', createedRecord._master, 'records', createedRecord._id, 'detail']);
+        if (createdRecord[0]) {
+          this.router.navigate(['mines', createdRecord[0].mineGuid, 'records', createdRecord[0]._id, 'detail']);
         } else {
           this.router.navigate(['../'], {relativeTo: this.route});
         }

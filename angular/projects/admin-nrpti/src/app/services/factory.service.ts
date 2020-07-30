@@ -366,12 +366,30 @@ export class FactoryService {
 
   // todo determine payload type to set
   public createMineRecord(record: any) {
-    const outboundObject = {
-      records: [record]
-    };
-    return this.recordService
-      .createRecord(outboundObject)
-      .pipe(catchError(error => this.apiService.handleError(error)));
+    // parse record.type to detemine create call to use
+    switch (record.type) {
+      case 'Administrative Penalty':
+        return this.createAdministrativePenalty(record);
+      case 'Administrative Sanction':
+        return this.createAdministrativeSanction(record);
+      case 'Certificate':
+        return this.createCertificate(record);
+      case 'Certificate Amendment':
+        return this.createCertificateAmendment(record);
+      case 'Compliance Self-report':
+      // todo confirm this is the right report
+        return this.createSelfReport(record);
+      case 'Construction Plan':
+        return this.createConstructionPlan(record);
+      case 'Inspection':
+        return this.createInspection(record);
+      case 'Order':
+        return this.createOrder(record);
+      case 'Permit':
+        return this.createPermit(record);
+      case 'Report':
+        return this.createReport(record);
+    }
   }
 
   /**
