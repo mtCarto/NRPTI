@@ -127,7 +127,7 @@ export class MinesRecordsAddEditComponent implements OnInit {
       recordDate: new FormControl(
         (this.recordState &&
           this.recordState.recordDate &&
-          this.utils.convertFormGroupNGBDateToJSDate(new Date(this.recordState.recordDate.date))) ||
+          this.utils.convertJSDateToNGBDate(new Date(this.recordState.recordDate.date))) ||
           (this.record && this.record.date && this.utils.convertJSDateToNGBDate(new Date(this.record.date))) ||
           '' || null
       ),
@@ -151,10 +151,10 @@ export class MinesRecordsAddEditComponent implements OnInit {
       this.myForm.get('recordType').markAsDirty();
       this.myForm.get('recordAgency').markAsDirty();
       this.myForm.get('recordPublish').markAsDirty();
-    }
 
-    // Remove used state
-    this.storeService.removeItem(StateIDs.recordAddEdit);
+      // Remove used state
+      this.storeService.removeItem(StateIDs.recordAddEdit);
+    }
   }
 
 
