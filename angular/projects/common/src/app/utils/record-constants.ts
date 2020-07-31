@@ -192,6 +192,28 @@ export class Picklists {
     Warning: { displayName: 'Warning', _schemaName: 'Warning' }
   };
 
+  public static readonly bcmiRecordTypePicklist = {
+    AdministrativePenalty: { displayName: 'Administrative Penalty', _schemaName: 'AdministrativePenalty' },
+    AdministrativeSanction: { displayName: 'Administrative Sanction', _schemaName: 'AdministrativeSanction' },
+    Agreement: { displayName: 'Agreement', _schemaName: 'Agreement' },
+    AnnualReport: { displayName: 'Annual Report', _schemaName: 'AnnualReportBCMI' },
+    Certificate: { displayName: 'Certificate', _schemaName: 'Certificate' },
+    CertificateAmendment: { displayName: 'Certificate Amendment', _schemaName: 'CertificateAmendmentBCMI' },
+    ConstructionPlan: { displayName: 'Construction Plan', _schemaName: 'ConstructionPlan' },
+    Correspondence: { displayName: 'Correspondence', _schemaName: 'CorrespondenceBCMI' },
+    CourtConviction: { displayName: 'Court Conviction', _schemaName: 'CourtConviction' },
+    DamSafetyInspection: { displayName: 'Dam Safety Inspection', _schemaName: 'DamSafetyInspectionBMCI' },
+    Inspection: { displayName: 'Inspection', _schemaName: 'Inspection' },
+    ManagementPlan: { displayName: 'Management Plan', _schemaName: 'ManagementPlan' },
+    Order: { displayName: 'Order', _schemaName: 'Order' },
+    Permit: { displayName: 'Permit', _schemaName: 'PermitBCMI' },
+    Report: { displayName: 'Report', _schemaName: 'ReportBCMI' },
+    RestorativeJustice: { displayName: 'Restorative Justice', _schemaName: 'RestorativeJustice' },
+    SelfReport: { displayName: 'Self Report', _schemaName: 'SelfReport' },
+    Ticket: { displayName: 'Ticket', _schemaName: 'Ticket' },
+    Warning: { displayName: 'Warning', _schemaName: 'Warning' }
+  };
+
   public static readonly sourceSystemRefPicklist = [
     'core',
     'cors-csv',
@@ -216,19 +238,6 @@ export class Picklists {
     'Management Plan',
     'Order',
     'Permit Amendment',
-    'Permit',
-    'Report'
-  ];
-
-  public static readonly mineRecordTypePickList = [
-    'Administrative Penalty',
-    'Administrative Sanction',
-    'Certificate',
-    'Certificate Amendment',
-    'Compliance Self-report',
-    'Construction Plan',
-    'Inspection',
-    'Order',
     'Permit',
     'Report'
   ];

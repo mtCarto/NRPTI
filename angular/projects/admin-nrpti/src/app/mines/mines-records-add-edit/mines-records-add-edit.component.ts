@@ -40,7 +40,11 @@ export class MinesRecordsAddEditComponent implements OnInit {
   public documentsToDelete = [];
 
   // Pick lists
-  public recordTypes = Picklists.mineRecordTypePickList;
+  public recordTypePickList = Picklists.collectionTypePicklist;
+  public recordTypeNamesBCMI = Object.values(Picklists.bcmiRecordTypePicklist).map(item => {
+    return item.displayName;
+  }).sort();
+
   public recordAgencies = Picklists.collectionAgencyPicklist;
 
   // record add edit state
@@ -229,14 +233,26 @@ export class MinesRecordsAddEditComponent implements OnInit {
     this.myForm.get('recordDate').dirty &&
       (record['date'] = this.utils.convertFormGroupNGBDateToJSDate(this.myForm.get('recordDate').value));
     this.myForm.get('recordType').dirty && (record['type'] = this.myForm.get('recordType').value);
-    // todo agency not showing on detail screen
-    this.myForm.get('recordAgency').dirty && (record['agency'] = this.myForm.get('recordAgency').value);
+    this.myForm.get('recordAgency').dirty && (record['issuingAgency'] = this.myForm.get('recordAgency').value);
 
+    // lookup appropriate schemaName from from type value
+    const recordSchema = Object.values(Picklists.bcmiRecordTypePicklist).filter(item => {
+      return item.displayName === record['type'];
+    });
+    const schemaString = recordSchema[0]._schemaName;
+
+     // todo flesh out anay additional logic for BCMI flavour
+    // BCMI flavour
+    record[schemaString] = {};
+    record[schemaString]['recordName'] = record['name'];
+    record[schemaString]['issuingAgency'] = record['issuingAgency'];
     if (this.myForm.get('recordPublish').dirty && this.myForm.get('recordPublish').value) {
-      record['addRole'] = 'public';
+      record[schemaString]['addRole'] = 'public';
+    } else if (this.myForm.get('recordPublish').dirty && !this.myForm.get('recordPublish').value) {
+      record[schemaString]['removeRole'] = 'public';
     }
+    console.log('record with flavour: ', record);
 
-    // todo add logic for BCMI flavour
     if (this.isEditing) {
       record['_id'] = this.record._id;
 
@@ -251,19 +267,19 @@ export class MinesRecordsAddEditComponent implements OnInit {
           this.factoryService
         );
 
-        console.log(docResponse);
+        console.log('doc', docResponse);
 
         this.loadingScreenService.setLoadingState(false, 'main');
         this.router.navigate(['mines', this.record._master, 'records', this.record._id, 'detail']);
       });
     } else {
-      record['mineGuid'] = this.route.snapshot.paramMap.get('mineId');
       record['_master'] = this.route.snapshot.paramMap.get('mineId');
       record['project'] = this.route.snapshot.paramMap.get('mineId');
 
       this.factoryService.createMineRecord(record).subscribe(async (res: any) => {
         this.recordUtils.parseResForErrors(res);
 
+        console.log('res: ', res);
         // todo check 400 error, likely local docker minio config
         const docResponse = await this.recordUtils.handleDocumentChanges(
           this.links,
@@ -275,10 +291,10 @@ export class MinesRecordsAddEditComponent implements OnInit {
         console.log(docResponse);
 
         const createdRecord = res && res.length && res[0] && res[0].length && res[0][0] && res[0][0].object;
-        // console.log('createdRec: ', createdRecord)
         this.loadingScreenService.setLoadingState(false, 'main');
+        // first record in array is the BCMI flavour record
         if (createdRecord[0]) {
-          this.router.navigate(['mines', createdRecord[0].mineGuid, 'records', createdRecord[0]._id, 'detail']);
+          this.router.navigate(['mines', createdRecord[0]._id, 'records', createdRecord[0]._id, 'detail']);
         } else {
           this.router.navigate(['../'], {relativeTo: this.route});
         }

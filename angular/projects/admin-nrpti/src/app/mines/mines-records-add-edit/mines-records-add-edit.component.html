@@ -98,7 +98,7 @@
         <div class="label-pair">
           <label for="recordType">Record Type</label>
           <select name="recordType" id="recordType" formControlName="recordType" class="form-control">
-            <option *ngFor="let recordType of recordTypes" [ngValue]="recordType">
+            <option *ngFor="let recordType of recordTypeNamesBCMI" [ngValue]="recordType">
               {{ recordType }}
             </option>
           </select>
