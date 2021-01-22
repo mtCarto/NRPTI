@@ -63,6 +63,8 @@ async function update(defaultLog) {
             'OrderBCMI',
             'PermitBCMI',
             'ReportBCMI',
+            'MineBCMI',
+            'CollectionBCMI'
           ]
         }
       }
@@ -83,6 +85,19 @@ async function update(defaultLog) {
               ]
             },
             else: 0
+          }
+        },
+      }
+    },
+    {
+      $addFields: {
+        skipRedact: {
+          $cond: {
+            if: {
+              $in: [ { $arrayElemAt: ['$fullRecord._schemaName', 0] }, ['MineBCMI', 'CollectionBCMI'] ]
+            },
+            then: true,
+            else: false
           }
         }
       }
@@ -133,6 +148,17 @@ async function update(defaultLog) {
             then: '',
             else: { $arrayElemAt: ['$fullRecord.issuedTo.dateOfBirth', 0] }
           }
+        }
+      }
+    },
+    {
+      $addFields: {
+        'fullRecord.issuedTo': {
+          $cond: {
+            if: { $eq: [ '$skipRedact', true ] },
+            then: {},
+            else: { $arrayElemAt: ['$fullRecord.issuedTo', 0] }
+          },
         }
       }
     }
@@ -213,10 +239,12 @@ async function update(defaultLog) {
 
     aggregate.push({ $out: 'redacted_record_subset' });
 
-    await mainCollection.aggregate(aggregate).next();
+    defaultLog.info('starting aggr')
 
+    await mainCollection.aggregate(aggregate).next();
+    defaultLog.info('done updating ')
   } catch (error) {
-    defaultLog.debug('Failed to update redacted_record_subset, error: ' + error);
+    defaultLog.info('Failed to update redacted_record_subset, error: ' + error);
   }
 }
 
