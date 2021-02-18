@@ -148,7 +148,8 @@ export class KeycloakService {
       roles.includes(Constants.ApplicationRoles.ADMIN_LNG) ||
       roles.includes(Constants.ApplicationRoles.ADMIN_NRCED) ||
       roles.includes(Constants.ApplicationRoles.ADMIN_BCMI) ||
-      roles.includes(Constants.ApplicationRoles.ADMIN_FLNRO);
+      roles.includes(Constants.ApplicationRoles.ADMIN_FLNRO) ||
+      roles.includes(Constants.ApplicationRoles.ADMIN_AGRI);
 
     this.menus[Constants.Menus.COMMUNICATIONS] =
       roles.includes(Constants.ApplicationRoles.ADMIN) ||

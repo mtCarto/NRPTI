@@ -51,6 +51,18 @@ export class ImportCSVComponent implements OnInit {
         'coors-csv': ['Administrative Sanction']
       };
     }
+
+    if (this.factoryService.userOnlyInLimitedRole(Constants.ApplicationRoles.ADMIN_AGRI)) {
+      this.dataSourceTypes = [
+        { displayName: 'AGRI-CMDB', value: 'cmdb-csv' },
+        { displayName: 'AGRI-MIS', value: 'mis-csv' }
+      ];
+
+      this.csvTypes = {
+        'mis-csv': ['Inspection'],
+        'cmdb-csv': ['Inspection']
+      };
+    }
   }
 
   /**
